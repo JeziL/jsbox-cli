@@ -40,6 +40,8 @@ $ jsbox watch ./index.js
 
 手动同步目录或文件
 
+*可通过 `-t / --target` 参数设置（重设）Host IP。*
+
 ```
 # 同步当前目录
 $ jsbox sync
@@ -49,6 +51,9 @@ $ jsbox sync ./dist
 
 # 同步指定文件
 $ jsbox sync ./index.js
+
+# 设置 Host IP 并同步指定文件
+$ jsbox sync ./index.js -t 192.168.1.1
 ```
 
 构建一个 JSBox 应用
@@ -66,7 +71,7 @@ $ jsbox build ./dist -o ./dist/output.box
 
 排除指定文件或目录
 
-*以安装包模式进行开发时，可通过 `-e / --exclude` 参数指定需要排除的文件或目录（以逗号分隔），在同步至 JSBox 时，安装包内将不会包含它们。特别地，以英文句点`.`开头的文件或目录会自动被排除。*
+*以安装包模式进行开发时，可通过 `-e / --exclude` 参数指定需要排除的文件或目录（以逗号分隔），在同步至 JSBox 时，安装包内将不会包含它们。特别地，以英文句点 `.` 开头的文件或目录会自动被排除。*
 
 ```
 jsbox watch ./dist -e README.md,LICENSE

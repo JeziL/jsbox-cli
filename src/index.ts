@@ -44,7 +44,17 @@ program
   .command('sync [dir]')
   .description('Sync files')
   .option('-e, --exclude <exclude>', 'Specify the files and directories that will be ignored')
+  .option('-t, --target <ip>', 'Set host ip')
   .action(async (dir: string, cmd) => {
+    let hostIP = cmd.target
+    if (hostIP) {
+      if (!net.isIP(hostIP)) {
+        log.error(`${hostIP} is not a valid IP`)
+        process.exit(1)
+      }
+      saveHost(hostIP)
+    }
+
     const pwd = process.cwd()
     dir = dir || '.'
     dir = path.resolve(pwd, dir)
