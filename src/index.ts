@@ -2,9 +2,10 @@ import * as program from 'commander'
 import * as net from 'net'
 import * as path from 'path'
 import { showHost, watch, saveHost, build, sync } from './actions'
-import { isPackageDir, getPackageName } from './utils'
+import { getPackageName } from './utils'
 import { getHost } from './config'
 import * as log from './log'
+import * as fs from 'fs'
 
 program
   .command('host')
@@ -48,7 +49,12 @@ program
     dir = dir || '.'
     dir = path.resolve(pwd, dir)
 
-    await sync(isPackageDir(dir), dir, getHost(), getPackageName(dir), cmd.exclude)
+    const isDir = fs.statSync(dir).isDirectory()
+    let packageName = path.basename(dir)
+    if (isDir) {
+      packageName = getPackageName(dir)
+    }
+    await sync(isDir, dir, getHost(), packageName, cmd.exclude)
   })
 
 program
