@@ -19,11 +19,10 @@ export function showHost () {
   console.log(`${chalk.greenBright(`Your Host IP:`)} ${ip}`)
 }
 
-export const sync = _.debounce(async (isdir, path, host, packageName) => {
-  log.info('File changed, uploading...')
+export const sync = _.debounce(async (isdir, path, host, packageName, exclude?) => {
   const formData = new FormData()
   if (isdir) {
-    path = await zipFolder(path, join(tmpdir(), `${packageName}.box`))
+    path = await zipFolder(path, join(tmpdir(), `${packageName}.box`), exclude)
   }
   formData.append('files[]', fs.createReadStream(path))
 
@@ -38,7 +37,7 @@ export const sync = _.debounce(async (isdir, path, host, packageName) => {
   log.info('🎉 Update success!')
 }, 100)
 
-export function watch (file: string) {
+export function watch (file: string, exclude?: string) {
   const host = getHost()
   if (!host) {
     log.error('Host IP has not been set up yet')
@@ -67,7 +66,8 @@ export function watch (file: string) {
   }
   chokidar.watch(file, { ignoreInitial: true })
     .on('all', async () => {
-      await sync(isDir, file, host, packageName)
+      log.info('File changed, uploading...')
+      await sync(isDir, file, host, packageName, exclude)
     })
 }
 
@@ -76,7 +76,7 @@ export function saveHost (host: string) {
   log.info(`Save your host ${host} to the config`)
 }
 
-export async function build (path: string, ouputPath?: string) {
+export async function build (path: string, ouputPath?: string, exclude?: string) {
   if (!fs.existsSync(path)) {
     log.error(`${path} is not exist`)
     process.exit(1)
@@ -102,6 +102,6 @@ export async function build (path: string, ouputPath?: string) {
     ? ouputPath = resolve(path, `.output/${packageName}.box`)
     : ouputPath = resolve(process.cwd(), ouputPath)
 
-  await zipFolder(path, ouputPath)
+  await zipFolder(path, ouputPath, exclude)
   log.info(`Build in ${ouputPath}`)
 }
